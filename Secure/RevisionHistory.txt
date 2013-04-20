@@ -1,0 +1,9 @@
+﻿Softwein.Secure Revision History
+-------------------------------------------------------------------------------
+
+1.0.2.0		2011-08-05
+Initial release of Softwein.Secure.dll.
+
+1.0.3.0		2011-10-04
+Changed License.CreateKey from public to internal to protect against misuse.
+Changed TripleDESCrypto class to internal to hide it in Object Browser.

@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SoftWein.Secure</name>
+    </assembly>
+    <members>
+        <member name="T:Softwein.Secure.License">
+            <summary>
+            Provides a copy protection software license.
+            An Ethernet adapter is required to generate a unique serial number.
+            </summary>
+        </member>
+        <member name="M:Softwein.Secure.License.#ctor(System.UInt32,System.DateTime,System.UInt32)">
+            <summary>
+            Constructs a <see cref="T:Softwein.Secure.License"/> object.
+            </summary>
+            <param name="productID">Unique product identifier.</param>
+            <param name="expirationDate">Expiration date of the license.</param>
+            <param name="value">Generic license value.</param>
+        </member>
+        <member name="M:Softwein.Secure.License.CreateKey(System.String,System.DateTime,System.UInt32)">
+            <summary>
+            Creates an encrypted license key.
+            </summary>
+            <param name="serialNumber">Serial number of the license.</param>
+            <param name="expirationDate">Expiration date of the license.</param>
+            <param name="value">Generic license value.</param>
+            <returns>A license key.</returns>
+        </member>
+        <member name="M:Softwein.Secure.License.WriteKey(System.String)">
+            <summary>
+            Update the license by applying a license key.
+            </summary>
+            <param name="licenseKey">The license key.</param>
+            <returns>True if license key was accepted.</returns>
+        </member>
+        <member name="M:Softwein.Secure.License.ReadKey">
+            <summary>
+            Reads the license key identifying the license instance.
+            </summary>
+            <returns>A license key or an empty string if license instance not valid.</returns>
+        </member>
+        <member name="M:Softwein.Secure.License.Encode(System.String,System.DateTime,System.UInt32)">
+            <summary>
+            Serializes the license content into a fixed length string.
+            </summary>
+        </member>
+        <member name="M:Softwein.Secure.License.Decode(System.String)">
+            <summary>
+            Decodes a plain license code.
+            </summary>
+        </member>
+        <member name="M:Softwein.Secure.License.GetNetworkAdapterAddress">
+            <summary>
+            Gets the MAC address of the first Ethernet network adapter
+            uniquely identifying a computer.
+            </summary>
+            <returns>Network adapter address or null if no adapter found.</returns>
+        </member>
+        <member name="P:Softwein.Secure.License.SerialNumber">
+            <summary>
+            Serial number of the license instance.
+            </summary>
+        </member>
+        <member name="P:Softwein.Secure.License.ExpirationDate">
+            <summary>
+            Expiration date of the license instance.
+            </summary>
+        </member>
+        <member name="P:Softwein.Secure.License.Value">
+            <summary>
+            Generic value of the license instance.
+            </summary>
+        </member>
+        <member name="P:Softwein.Secure.License.IsValid">
+            <summary>
+            Indicates if the license is valid.
+            </summary>
+        </member>
+    </members>
+</doc>

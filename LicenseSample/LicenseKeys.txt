@@ -1,0 +1,12 @@
+// Sample license keys.
+
+OYlNDrn1YPpY9Z1TZtr2aXumanHRjhmxWQhLGl7qlEMiA/PccaoUuQ==
+
+OYlNDrn1YPopXM+8uCb2DeYBXAy1DJz3hadmt5WcMdL47rKZiFwH7Q==
+
+
+// invalid key
+OYlNDrn1YPpnSTzlaDB91aox4qxkQYvxnCB/tQHu7clfkZSDxMaYCQ==
+
+// expired 10/01
+OYlNDrn1YPqC070Aoyxv1hjHsWL7CvPuckutAjRLzKogvAG2AQGdQw==
