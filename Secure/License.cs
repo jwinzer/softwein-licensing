@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011 Jochen Winzer, softwein. Alle Rechte vorbehalten.
+﻿// Copyright (c) 2011-2014 Jochen Winzer, softwein. Alle Rechte vorbehalten.
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -13,7 +13,8 @@ namespace Softwein.Secure
     public class License
     {
         // Encryption key to generate license key.
-        private static readonly string key = "Bianchi Infinito C2C";
+        // old key: Bianchi Infinito C2C
+        private static readonly string key = "I love 2 develop great products.";
         
         /// <summary>
         /// Serial number of the license instance.
@@ -144,16 +145,17 @@ namespace Softwein.Secure
         }
 
         /// <summary>
-        /// Gets the MAC address of the first Ethernet network adapter
+        /// Gets the MAC address of the first Ethernet LAN network adapter
         /// uniquely identifying a computer.
         /// </summary>
         /// <returns>Network adapter address or null if no adapter found.</returns>
-        private string GetNetworkAdapterAddress()
+        private static string GetNetworkAdapterAddress()
         {
             // Get first Ethernet network adapter.
             NetworkInterface adapter =
                 NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
-                nif => nif.NetworkInterfaceType == NetworkInterfaceType.Ethernet);
+                nif => nif.NetworkInterfaceType == NetworkInterfaceType.Ethernet &&
+                nif.Name.Contains("LAN"));
             if (adapter == null) return null;
             
             // Get adapter's MAC address.

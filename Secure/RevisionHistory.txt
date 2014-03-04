@@ -7,3 +7,15 @@ Initial release of Softwein.Secure.dll.
 1.0.3.0		2011-10-04
 Changed License.CreateKey from public to internal to protect against misuse.
 Changed TripleDESCrypto class to internal to hide it in Object Browser.
+
+1.1.0.0		2014-01-24
+Changed License.key.
+
+1.0.4.0		2014-03-04
+1.1.4.0		2014-03-24	with new license key
+Bug fix: License.GetNetworkAdapterAddress was returning both LAN and Bluetooth
+    Ethernet adapter addresses. Now just looks for a LAN adapter.
+
+
+
+TODO:

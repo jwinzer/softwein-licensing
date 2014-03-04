@@ -8,8 +8,8 @@
     <ProjectGuid>{5C6606DD-6954-424F-97A6-B541781060C1}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>GetNetworkInterfacess</RootNamespace>
-    <AssemblyName>GetNetworkInterfacess</AssemblyName>
+    <RootNamespace>GetNetworkInterfaces</RootNamespace>
+    <AssemblyName>GetNetworkInterfaces</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
