@@ -151,11 +151,12 @@ namespace Softwein.Secure
         /// <returns>Network adapter address or null if no adapter found.</returns>
         private static string GetNetworkAdapterAddress()
         {
-            // Get first Ethernet network adapter.
+            // Get first Ethernet network adapter of collection ordered by Id that
+            // contains "LAN" or "local area" within its name.
             NetworkInterface adapter =
-                NetworkInterface.GetAllNetworkInterfaces().FirstOrDefault(
+                NetworkInterface.GetAllNetworkInterfaces().OrderBy(nif => nif.Id).FirstOrDefault(
                 nif => nif.NetworkInterfaceType == NetworkInterfaceType.Ethernet &&
-                nif.Name.Contains("LAN"));
+                (nif.Name.Contains("LAN") || nif.Name.ToLower().Contains("local area")));
             if (adapter == null) return null;
             
             // Get adapter's MAC address.

@@ -16,6 +16,10 @@ Changed License.key.
 Bug fix: License.GetNetworkAdapterAddress was returning both LAN and Bluetooth
     Ethernet adapter addresses. Now just looks for a LAN adapter.
 
+1.1.5.0		2014-07-11
+License.GetNetworkAdapterAddress() now looks for Ethernet adapters that either contain
+"LAN" or "local area" in its name.
+
 
 
 TODO:
