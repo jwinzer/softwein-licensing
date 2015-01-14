@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2011-2014 Jochen Winzer, softwein. Alle Rechte vorbehalten.
+﻿// Copyright (c) 2011-2015 Jochen Winzer, softwein. Alle Rechte vorbehalten.
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.Net.NetworkInformation;
 
 namespace Softwein.Secure
@@ -47,11 +48,17 @@ namespace Softwein.Secure
             SerialNumber = string.Empty;
             ExpirationDate = expirationDate;
             Value = value;
+
+            // Get a hardware fingerprint: First, try disk ID then BIOS ID.
+            string id = GetDiskId();
+            if (id == null || id.Length < 8)
+            {
+                id = GetBiosId();
+                if (id == null || id.Length < 8) return;
+            }
             
-            // Get MAC address of the primary network adapter.            
-            string mac = GetNetworkAdapterAddress();
-            if (!string.IsNullOrEmpty(mac))
-                SerialNumber = productID.ToString("X2") + mac.Substring(mac.Length - 8, 8);
+            // Generate serial number.            
+            SerialNumber = productID.ToString("X2") + id.Substring(id.Length - 8, 8);
         }
 
         /// <summary>
@@ -161,6 +168,44 @@ namespace Softwein.Secure
             
             // Get adapter's MAC address.
             return adapter.GetPhysicalAddress().ToString();
+        }
+
+        /// <summary>
+        /// Gets the serial number of the BIOS.
+        /// </summary>
+        private static string GetBiosId()
+        {
+            string id = null;
+            try
+            {
+                ManagementObjectSearcher mos = new ManagementObjectSearcher("Select * From Win32_BIOS");
+                foreach (ManagementObject mo in mos.Get())
+                {
+                    // Return null if multiple BIOS numbers have been found.
+                    if (id != null) return null;
+
+                    id = mo["SerialNumber"].ToString();
+                }
+            }
+            catch (Exception) { }
+            return id;
+        }
+
+        /// <summary>
+        /// Gets the volume serial number of the logical system drive.
+        /// </summary>
+        private static string GetDiskId()
+        {
+            string id = null;
+            string systemDeviceId = Environment.GetFolderPath(Environment.SpecialFolder.System).Substring(0, 2);
+            try
+            {
+                ManagementObject dsk = new ManagementObject("Win32_LogicalDisk.DeviceId='" + systemDeviceId + "'");
+                dsk.Get();
+                id = dsk["VolumeSerialNumber"].ToString();
+            }
+            catch (Exception) { }
+            return id;
         }
     }
 }

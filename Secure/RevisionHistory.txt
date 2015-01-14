@@ -20,6 +20,9 @@ Bug fix: License.GetNetworkAdapterAddress was returning both LAN and Bluetooth
 License.GetNetworkAdapterAddress() now looks for Ethernet adapters that either contain
 "LAN" or "local area" in its name.
 
+1.2.0.0		2015-01-14
+Generate hardware fingerprint from disk ID or BIOS ID.
+
 
 
 TODO:
