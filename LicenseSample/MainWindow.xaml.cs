@@ -54,6 +54,7 @@ namespace LicenseSample
                 "\nSerial Number: " + license.SerialNumber + 
                 "\nExpiration Date: " +
                 license.ExpirationDate.ToShortDateString() + 
+                "\nDongle: " + license.Dongle +
                 "\nKeypads: " +  KeypadLicense.ToString();
 
             // save license key

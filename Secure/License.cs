@@ -28,6 +28,11 @@ namespace Softwein.Secure
         public DateTime ExpirationDate { get; private set; }
 
         /// <summary>
+        /// Dongle value of the license instance. Empty if no dongle required.
+        /// </summary>
+        public string Dongle { get; private set; }
+
+        /// <summary>
         /// Generic value of the license instance.
         /// </summary>
         public uint Value { get; private set; }
@@ -47,14 +52,19 @@ namespace Softwein.Secure
         {
             SerialNumber = string.Empty;
             ExpirationDate = expirationDate;
+            Dongle = string.Empty;
             Value = value;
 
-            // Get a hardware fingerprint: First, try disk ID then BIOS ID.
-            string id = GetDiskId();
+            // Get a hardware fingerprint: First, try motherboard ID then BIOS ID, then Disk ID.
+            string id = GetBaseBoardId();
             if (id == null || id.Length < 8)
             {
                 id = GetBiosId();
-                if (id == null || id.Length < 8) return;
+                if (id == null || id.Length < 8)
+                {
+                    id = GetDiskId();
+                    if (id == null || id.Length < 8) return;
+                }
             }
             
             // Generate serial number.            
@@ -65,13 +75,15 @@ namespace Softwein.Secure
         /// Creates an encrypted license key.
         /// </summary>
         /// <param name="serialNumber">Serial number of the license.</param>
+        /// <param name="dongle">Dongle value of the license. May be empty.</param>
         /// <param name="expirationDate">Expiration date of the license.</param>
         /// <param name="value">Generic license value.</param>
         /// <returns>A license key.</returns>
-        internal static string CreateKey(string serialNumber, DateTime expirationDate, uint value)
+        internal static string CreateKey(string serialNumber, string dongle, DateTime expirationDate, uint value)
         {
+            // NOTE: THIS METHOD MUST NOT BE PUBLIC TO PREVENT FRAUD!
             // Encode and encrypt license content.
-            string plainCode = Encode(serialNumber, expirationDate, value);
+            string plainCode = Encode(serialNumber, dongle, expirationDate, value);
             TripleDESCrypto crypto = new TripleDESCrypto(key);
             return crypto.EncryptData(plainCode);
         }
@@ -108,7 +120,7 @@ namespace Softwein.Secure
             if (IsValid)
             {
                 // Encode and encrypt license content.
-                string plainCode = Encode(SerialNumber, ExpirationDate, Value);
+                string plainCode = Encode(SerialNumber, Dongle, ExpirationDate, Value);
                 TripleDESCrypto crypto = new TripleDESCrypto(key);
                 return crypto.EncryptData(plainCode);
             }
@@ -118,10 +130,11 @@ namespace Softwein.Secure
         /// <summary>
         /// Serializes the license content into a fixed length string.
         /// </summary>
-        private static string Encode(string serialNumber, DateTime expiration, uint count)
+        private static string Encode(string serialNumber, string dongle, DateTime expiration, uint count)
         {
-            // Fixed string length = 10 + 16 + 8 = 34.
-            return serialNumber + expiration.Ticks.ToString("X16") + count.ToString("X8");
+            string s = (!string.IsNullOrEmpty(dongle)) ?
+                serialNumber.Substring(0, 2) + "##" + dongle + "#" : serialNumber;
+            return s + expiration.Ticks.ToString("X16") + count.ToString("X8");
         }
 
         /// <summary>
@@ -129,25 +142,52 @@ namespace Softwein.Secure
         /// </summary>
         private bool Decode(string licenseCode)
         {
+            // Deserialize a dongle license.
+            //  2 + 2 + X  + 1 +    16   +   8   >= 30       
+            // [ID]##[dongle]#[expiration][value]
+            if (licenseCode.Substring(2, 2) == "##" && licenseCode.Length >= 30)
+            {
+                string productID = licenseCode.Substring(0, 2);
+
+                // Product ID must match.
+                if (productID == SerialNumber.Substring(0, 2))
+                {
+                    // Extract dongle.
+                    Dongle = licenseCode.Substring(4, licenseCode.Length - 29);
+
+                    // Extract expiration date and convert from base 16.
+                    long expirationTicks = Convert.ToInt64(licenseCode.Substring(licenseCode.Length - 24, 16), 16);
+                    ExpirationDate = new DateTime(expirationTicks);
+
+                    // Extract value and convert from base 16.
+                    Value = Convert.ToUInt32(licenseCode.Substring(licenseCode.Length - 8), 16);
+                    return true;
+                }
+            }            
+            
             // Deserialize the plain fixed length license string.
-            if (licenseCode.Length == 34)
+            //  10 +    16    +   8  = 34
+            // [sn][expiration][value]
+            else if (licenseCode.Length == 34)
             {
                 // Extract and validate serial number.
                 string sn = licenseCode.Substring(0, 10);
+
+                // Serial number must match.
                 if (sn == SerialNumber)
                 {
-                    // Extract expirationDate date and convert from base 16.
+                    Dongle = string.Empty;
+
+                    // Extract expiration date and convert from base 16.
                     long expirationTicks = Convert.ToInt64(licenseCode.Substring(10, 16), 16);
+                    ExpirationDate = new DateTime(expirationTicks);
 
                     // Extract value and convert from base 16.
-                    uint count = Convert.ToUInt32(licenseCode.Substring(26), 16);
-
-                    // Update licence.
-                    ExpirationDate = new DateTime(expirationTicks);
-                    Value = count;
+                    Value = Convert.ToUInt32(licenseCode.Substring(26), 16);
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -190,9 +230,33 @@ namespace Softwein.Secure
             catch (Exception) { }
             return id;
         }
+        
+        /// <summary>
+        /// Gets the serial number of the motherboard.
+        /// Could be identical with the BIOS ID.
+        /// </summary>
+        private static string GetBaseBoardId()
+        {
+            string id = null;
+            try
+            {
+                ManagementObjectSearcher mos = new ManagementObjectSearcher("Select * From Win32_BaseBoard");
+                foreach (ManagementObject mo in mos.Get())
+                {
+                    // Return null if multiple BIOS numbers have been found.
+                    if (id != null) return null;
+
+                    id = mo["SerialNumber"].ToString();
+                }
+            }
+            catch (Exception) { }
+            return id;
+        }
 
         /// <summary>
         /// Gets the volume serial number of the logical system drive.
+        /// The S/N is generated when the disk is formatted. It can easily be changed.
+        /// Identical computers might have the same S/N. So it's not really unique.
         /// </summary>
         private static string GetDiskId()
         {

@@ -18,7 +18,7 @@
             <param name="expirationDate">Expiration date of the license.</param>
             <param name="value">Generic license value.</param>
         </member>
-        <member name="M:Softwein.Secure.License.CreateKey(System.String,System.DateTime,System.UInt32)">
+        <member name="M:Softwein.Secure.License.CreateKey(System.String,System.String,System.DateTime,System.UInt32)">
             <summary>
             Creates an encrypted license key.
             </summary>
@@ -40,7 +40,7 @@
             </summary>
             <returns>A license key or an empty string if license instance not valid.</returns>
         </member>
-        <member name="M:Softwein.Secure.License.Encode(System.String,System.DateTime,System.UInt32)">
+        <member name="M:Softwein.Secure.License.Encode(System.String,System.String,System.DateTime,System.UInt32)">
             <summary>
             Serializes the license content into a fixed length string.
             </summary>
@@ -52,10 +52,28 @@
         </member>
         <member name="M:Softwein.Secure.License.GetNetworkAdapterAddress">
             <summary>
-            Gets the MAC address of the first Ethernet network adapter
+            Gets the MAC address of the first Ethernet LAN network adapter
             uniquely identifying a computer.
             </summary>
             <returns>Network adapter address or null if no adapter found.</returns>
+        </member>
+        <member name="M:Softwein.Secure.License.GetBiosId">
+            <summary>
+            Gets the serial number of the BIOS.
+            </summary>
+        </member>
+        <member name="M:Softwein.Secure.License.GetBaseBoardId">
+            <summary>
+            Gets the serial number of the motherboard.
+            Could be identical with the BIOS ID.
+            </summary>
+        </member>
+        <member name="M:Softwein.Secure.License.GetDiskId">
+            <summary>
+            Gets the volume serial number of the logical system drive.
+            The S/N is generated when the disk is formatted. It can easily be changed.
+            Identical computers might have the same S/N. So it's not really unique.
+            </summary>
         </member>
         <member name="P:Softwein.Secure.License.SerialNumber">
             <summary>
@@ -65,6 +83,11 @@
         <member name="P:Softwein.Secure.License.ExpirationDate">
             <summary>
             Expiration date of the license instance.
+            </summary>
+        </member>
+        <member name="P:Softwein.Secure.License.Dongle">
+            <summary>
+            Dongle value of the license instance. Empty if no dongle required.
             </summary>
         </member>
         <member name="P:Softwein.Secure.License.Value">

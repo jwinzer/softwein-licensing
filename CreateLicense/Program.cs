@@ -21,7 +21,10 @@ namespace CreateLicense
                 Console.Write("License Count  : ");
                 uint count = Convert.ToUInt32(Console.ReadLine());
 
-                string code = License.CreateKey(sn, expiration, count);
+                Console.Write("Dongle         : ");
+                string dongle = Console.ReadLine();
+
+                string code = License.CreateKey(sn, dongle, expiration, count);
 
                 Console.WriteLine();
                 Console.WriteLine(code);

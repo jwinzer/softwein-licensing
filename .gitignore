@@ -10,3 +10,7 @@
 /TestLicensing/bin
 /TestLicensing/obj
 /*.zip
+/GetFingerPrint/bin
+/GetFingerPrint/obj
+bin
+obj

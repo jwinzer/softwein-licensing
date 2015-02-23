@@ -23,6 +23,13 @@ License.GetNetworkAdapterAddress() now looks for Ethernet adapters that either c
 1.2.0.0		2015-01-14
 Generate hardware fingerprint from disk ID or BIOS ID.
 
+1.2.1.0		2015-01-28
+Generate hardware fingerprint from motherboard ID or BIOS ID or logical disk ID.
+Motherboard and BIOS will not change. Logical disk ID might be identical for identical PC's and
+will change when reformatting disk.
+
+1.3.0.0		2015-02-23
+Extend licensing schema to include a dongle based license.
 
 
 TODO:
