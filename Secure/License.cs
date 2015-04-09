@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Management;
 using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 
 namespace Softwein.Secure
 {
@@ -55,20 +56,22 @@ namespace Softwein.Secure
             Dongle = string.Empty;
             Value = value;
 
-            // Get a hardware fingerprint: First, try motherboard ID then BIOS ID, then Disk ID.
-            string id = GetBaseBoardId();
-            if (id == null || id.Length < 8)
+            // Create an 8 digit hardware fingerprint from motherboard ID, BIOS ID and Disk ID.
+            int len = 8;
+            string fp = GetFingerPrint(GetBaseBoardId(), len);
+            if (fp.Length < len)
             {
-                id = GetBiosId();
-                if (id == null || id.Length < 8)
+                fp += GetFingerPrint(GetBiosId(), len - fp.Length);
+                if (fp.Length < len)
                 {
-                    id = GetDiskId();
-                    if (id == null || id.Length < 8) return;
+                    fp += GetFingerPrint(GetDiskId(), len - fp.Length);
+                    if (fp.Length < len)
+                        return; // failed to generate fingerprint
                 }
             }
             
-            // Generate serial number.            
-            SerialNumber = productID.ToString("X2") + id.Substring(id.Length - 8, 8);
+            // Generate 10 digit serial number.            
+            SerialNumber = productID.ToString("X2") + fp;
         }
 
         /// <summary>
@@ -270,6 +273,22 @@ namespace Softwein.Secure
             }
             catch (Exception) { }
             return id;
+        }
+
+        private static string GetFingerPrint(string value, int length)
+        {
+            if (value != null)
+            {
+                value = RemoveSpecialCharacters(value);
+                length = Math.Min(length, value.Length);
+                return value.Substring(value.Length - length, length);
+            }
+            return string.Empty;
+        }
+
+        private static string RemoveSpecialCharacters(string value)
+        {
+            return Regex.Replace(value, "[^a-zA-Z0-9]+", string.Empty, RegexOptions.Compiled);
         }
     }
 }

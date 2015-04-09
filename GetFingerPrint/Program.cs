@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Management;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GetFingerPrint
 {
@@ -20,6 +18,21 @@ namespace GetFingerPrint
             //ShowID("Win32_BIOS", "IdentificationCode");
             //ShowID("Win32_DiskDrive", "Signature");
             //ShowID("Win32_BaseBoard", "SerialNumber");
+
+            // Create an 8 digit hardware fingerprint from motherboard ID, BIOS ID and Disk ID.
+            int len = 8;
+            string fp = GetFingerPrint(GetBaseBoardId(), len);
+            if (fp.Length < len)
+            {
+                fp += GetFingerPrint(GetBiosId(), len - fp.Length);
+                if (fp.Length < len)
+                {
+                    fp += GetFingerPrint(GetDiskId(), len - fp.Length);
+                }
+            }
+
+            Console.WriteLine("FP   : " + fp);
+
         }
 
         private static void ShowID(string wmiClass, string wmiProperty)
@@ -100,6 +113,22 @@ namespace GetFingerPrint
             }
             catch (Exception) { }
             return id;
+        }
+
+        private static string GetFingerPrint(string value, int length)
+        {
+            if (value != null)
+            {
+                value = RemoveSpecialCharacters(value);
+                length = Math.Min(length, value.Length);
+                return value.Substring(value.Length - length, length);
+            }
+            return string.Empty;
+        }
+
+        private static string RemoveSpecialCharacters(string value)
+        {
+            return Regex.Replace(value, "[^a-zA-Z0-9]+", string.Empty, RegexOptions.Compiled);
         }
     }
 }

@@ -23,6 +23,7 @@
             Creates an encrypted license key.
             </summary>
             <param name="serialNumber">Serial number of the license.</param>
+            <param name="dongle">Dongle value of the license. May be empty.</param>
             <param name="expirationDate">Expiration date of the license.</param>
             <param name="value">Generic license value.</param>
             <returns>A license key.</returns>
