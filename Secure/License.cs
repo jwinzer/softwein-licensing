@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2011-2015 Jochen Winzer, softwein. Alle Rechte vorbehalten.
+﻿// Copyright (c) 2011-2016 Jochen Winzer, softwein. Alle Rechte vorbehalten.
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -70,7 +70,8 @@ namespace Softwein.Secure
                 }
             }
             
-            // Generate 10 digit serial number.            
+            // Generate 10 digit serial number. Use only uppercase letters.
+            fp = fp.ToUpper();
             SerialNumber = productID.ToString("X2") + fp;
         }
 
@@ -277,13 +278,14 @@ namespace Softwein.Secure
 
         private static string GetFingerPrint(string value, int length)
         {
-            if (value != null)
-            {
-                value = RemoveSpecialCharacters(value);
-                length = Math.Min(length, value.Length);
-                return value.Substring(value.Length - length, length);
-            }
-            return string.Empty;
+            // Reject value "Not Applicable" which is returned by GetBiosId() and GetBaseBoardId() for
+            // computers running cloning software.
+            if (value == null || value.ToLower().Contains("not applicable"))
+                return string.Empty;
+            
+            value = RemoveSpecialCharacters(value);
+            length = Math.Min(length, value.Length);
+            return value.Substring(value.Length - length, length);
         }
 
         private static string RemoveSpecialCharacters(string value)

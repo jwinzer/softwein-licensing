@@ -20,7 +20,8 @@ namespace TestLicensing
             string code = license.ReadKey();
             Console.WriteLine(code);
 
-            code = License.CreateKey(license.SerialNumber, "33FA52", DateTime.Now.AddDays(5), 100);
+            //code = License.CreateKey(license.SerialNumber, "33FA52", DateTime.Now.AddDays(5), 100);
+            code = License.CreateKey(license.SerialNumber, null, DateTime.Parse("2099-12-31"), 100);
             Console.WriteLine(code);
             Console.WriteLine(license.WriteKey(code).ToString());
             Console.WriteLine(license.ReadKey());

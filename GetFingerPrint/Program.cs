@@ -30,7 +30,7 @@ namespace GetFingerPrint
                     fp += GetFingerPrint(GetDiskId(), len - fp.Length);
                 }
             }
-
+            fp = fp.ToUpper();
             Console.WriteLine("FP   : " + fp);
 
         }
@@ -117,13 +117,12 @@ namespace GetFingerPrint
 
         private static string GetFingerPrint(string value, int length)
         {
-            if (value != null)
-            {
-                value = RemoveSpecialCharacters(value);
-                length = Math.Min(length, value.Length);
-                return value.Substring(value.Length - length, length);
-            }
-            return string.Empty;
+            if (value == null || value.ToLower().Contains("not applicable"))
+                return string.Empty;
+
+            value = RemoveSpecialCharacters(value);
+            length = Math.Min(length, value.Length);
+            return value.Substring(value.Length - length, length);
         }
 
         private static string RemoveSpecialCharacters(string value)
